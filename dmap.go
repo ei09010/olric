@@ -201,6 +201,15 @@ func (dm *DMap) Put(key string, value interface{}) error {
 	return convertDMapError(err)
 }
 
+// Set sets the value for the given key. It overwrites any previous value
+// for that key and it's thread-safe. The key has to be string. value type
+// is arbitrary. It is safe to modify the contents of the arguments after
+// Put returns but not before.
+func (dm *DMap) Set(key string, value interface{}, flags int32, casUID int64, length int32) error {
+	err := dm.dm.Set(key, value, flags, casUID, length)
+	return convertDMapError(err)
+}
+
 // PutIf sets the value for the given key. It overwrites any previous value
 // for that key and it's thread-safe. The key has to be string. value type
 // is arbitrary. It is safe to modify the contents of the arguments after

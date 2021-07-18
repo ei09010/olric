@@ -61,6 +61,7 @@ const (
 	OpStreamMessage         // 41
 	OpStreamPing            // 42
 	OpStreamPong            // 43
+	OpMemCachedSet          // 44
 )
 
 type StatusCode uint8

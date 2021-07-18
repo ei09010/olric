@@ -33,9 +33,11 @@ type env struct {
 	timeout       time.Duration
 	kind          partitions.Kind
 	fragment      *fragment
+	casUID        int64
+	length        int32
 }
 
-func newEnv(opcode protocol.OpCode, name, key string, value []byte, timeout time.Duration, flags int16, kind partitions.Kind) *env {
+func newEnv(opcode protocol.OpCode, name, key string, value []byte, timeout time.Duration, flags int16, kind partitions.Kind, casUID int64, length int32) *env {
 	e := &env{
 		opcode:    opcode,
 		dmap:      name,
@@ -45,6 +47,8 @@ func newEnv(opcode protocol.OpCode, name, key string, value []byte, timeout time
 		timeout:   timeout,
 		flags:     flags,
 		kind:      kind,
+		casUID:    casUID,
+		length:    length,
 	}
 	switch {
 	case opcode == protocol.OpPut:
@@ -55,6 +59,8 @@ func newEnv(opcode protocol.OpCode, name, key string, value []byte, timeout time
 		e.replicaOpcode = protocol.OpPutIfReplica
 	case opcode == protocol.OpPutIfEx:
 		e.replicaOpcode = protocol.OpPutIfExReplica
+	case opcode == protocol.OpMemCachedSet:
+		e.replicaOpcode = protocol.OpMemCachedSet
 	}
 	return e
 }

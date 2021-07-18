@@ -157,7 +157,7 @@ func (dm *DMap) lockKey(opcode protocol.OpCode, key string, timeout, deadline ti
 	if err != nil {
 		return nil, err
 	}
-	e, err := dm.prepareAndSerialize(opcode, key, token, timeout, IfNotFound)
+	e, err := dm.prepareAndSerialize(opcode, key, token, timeout, IfNotFound, 0, 0)
 	if err != nil {
 		return nil, err
 	}
