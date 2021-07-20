@@ -25,8 +25,10 @@ type Entry interface {
 	Timestamp() int64
 	Encode() []byte
 	Decode([]byte)
-	SetFlags(int32)
-	GetFlags() int32
+	SetMemFlags(int32)
+	GetMemFlags() int32
+	SetExpire(int64)
+	GetExpire() int64
 	SetCasUnique(int64)
 	GetCasUnique() int64
 }

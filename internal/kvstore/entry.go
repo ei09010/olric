@@ -30,8 +30,9 @@ type Entry struct {
 	ttl       int64
 	timestamp int64
 	value     []byte
-	Flags     int32
-	CasUnique int64
+	memFlags  int32
+	length    int64
+	expire    int64
 }
 
 var _ storage.Entry = (*Entry)(nil)
@@ -72,22 +73,28 @@ func (e *Entry) Timestamp() int64 {
 	return e.timestamp
 }
 
-// maybe move to a memCacheEntry specific implementation ?
-
-func (e *Entry) SetFlags(flags int32) {
-	e.Flags = flags
+func (e *Entry) SetMemFlags(memFlags int32) {
+	e.memFlags = memFlags
 }
 
-func (e *Entry) GetFlags() int32 {
-	return e.Flags
+func (e *Entry) GetMemFlags() int32 {
+	return e.memFlags
 }
 
-func (e *Entry) SetCasUnique(casUnique int64) {
-	e.CasUnique = casUnique
+func (e *Entry) SetLength(length int64) {
+	e.length = length
 }
 
-func (e *Entry) GetCasUnique() int64 {
-	return e.CasUnique
+func (e *Entry) GetLength() int64 {
+	return e.length
+}
+
+func (e *Entry) SetExpire(expire int64) {
+	e.expire = expire
+}
+
+func (e *Entry) GetExpire() int64 {
+	return e.expire
 }
 
 func (e *Entry) Encode() []byte {

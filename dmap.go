@@ -58,6 +58,8 @@ var (
 	ErrKeyTooLarge = errors.New("key too large")
 )
 
+var SuccValueStored = "STORED"
+
 // NumConcurrentWorkers is the number of concurrent workers to run a query on the cluster.
 const NumConcurrentWorkers = 2
 

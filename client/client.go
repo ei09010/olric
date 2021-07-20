@@ -187,6 +187,9 @@ func checkStatusCode(resp protocol.EncodeDecoder) error {
 	status := resp.Status()
 	switch {
 	case status == protocol.StatusOK:
+		// if resp.OpCode() == protocol.OpMemCachedSet{
+		// 	return olric.SuccValueStored
+		// }
 		return nil
 	case status == protocol.StatusErrInternalFailure:
 		return errors.Wrap(olric.ErrInternalServerError, string(resp.Value()))

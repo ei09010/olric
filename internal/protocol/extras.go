@@ -106,6 +106,15 @@ type StatsExtra struct {
 	CollectRuntime bool
 }
 
+// memcached extras
+
+type SetExtra struct {
+	Expire int64
+	Flags  int32
+	Length int64
+	//CasUnique int64
+}
+
 func loadExtras(raw []byte, op OpCode) (interface{}, error) {
 	switch op {
 	case OpPutEx, OpPutExReplica:
@@ -174,6 +183,10 @@ func loadExtras(raw []byte, op OpCode) (interface{}, error) {
 		return extra, err
 	case OpStats:
 		extra := StatsExtra{}
+		err := binary.Read(bytes.NewReader(raw), binary.BigEndian, &extra)
+		return extra, err
+	case OpMemCachedGet:
+		extra := SetExtra{}
 		err := binary.Read(bytes.NewReader(raw), binary.BigEndian, &extra)
 		return extra, err
 	default:

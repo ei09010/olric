@@ -33,11 +33,30 @@ type env struct {
 	timeout       time.Duration
 	kind          partitions.Kind
 	fragment      *fragment
-	casUID        int64
-	length        int32
+	expire        int64
+	memCacheFlags int32
+	length        int64
 }
 
-func newEnv(opcode protocol.OpCode, name, key string, value []byte, timeout time.Duration, flags int16, kind partitions.Kind, casUID int64, length int32) *env {
+// type memCacheEnv struct {
+// 	env    *env
+// 	flags  int32
+// 	casUID int64
+// 	length int64
+// }
+
+// func newMemCacheEnv(opcode protocol.OpCode, name, key string, value []byte, timeout time.Duration, flags int16, kind partitions.Kind, expire int64, flagsMc int32, length int64) *memCacheEnv {
+
+// 	e := newEnv(opcode, name, key, value, timeout, flags, kind)
+
+// 	return &memCacheEnv{
+// 		env:    e,
+// 		flags:  flagsMc,
+// 		length: length,
+// 	}
+// }
+
+func newEnv(opcode protocol.OpCode, name, key string, value []byte, timeout time.Duration, flags int16, kind partitions.Kind, expire int64, memCacheFlags int32, length int64) *env {
 	e := &env{
 		opcode:    opcode,
 		dmap:      name,
@@ -47,8 +66,6 @@ func newEnv(opcode protocol.OpCode, name, key string, value []byte, timeout time
 		timeout:   timeout,
 		flags:     flags,
 		kind:      kind,
-		casUID:    casUID,
-		length:    length,
 	}
 	switch {
 	case opcode == protocol.OpPut:
@@ -105,6 +122,10 @@ func newEnvFromReq(r protocol.EncodeDecoder, kind partitions.Kind) *env {
 	case protocol.OpExpire:
 		e.timestamp = req.Extra().(protocol.ExpireExtra).Timestamp
 		e.timeout = time.Duration(req.Extra().(protocol.ExpireExtra).TTL)
+	case protocol.OpMemCachedSet:
+		e.memCacheFlags = req.Extra().(protocol.SetExtra).Flags
+		e.length = req.Extra().(protocol.SetExtra).Length
+		e.expire = req.Extra().(protocol.SetExtra).Expire
 	}
 	return e
 }
@@ -142,6 +163,12 @@ func (e *env) toReq(opcode protocol.OpCode) *protocol.DMapMessage {
 		req.SetExtra(protocol.ExpireExtra{
 			Timestamp: e.timestamp,
 			TTL:       e.timeout.Nanoseconds(),
+		})
+	case protocol.OpMemCachedSet:
+		req.SetExtra(protocol.SetExtra{
+			Expire: e.expire,
+			Flags:  e.memCacheFlags,
+			Length: e.length,
 		})
 	}
 	return req
